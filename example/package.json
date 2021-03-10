@@ -1,5 +1,5 @@
 {
-  "name": "example-web3-react-curren-block",
+  "name": "example-web3-react-current-block",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -10,6 +10,7 @@
     "@web3-react/core": "6.1.9",
     "@web3-react/network-connector": "6.1.9",
     "babel-jest": "^26.6.3",
+    "dcent-connector": "file:../",
     "dotenv": "8.2.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",

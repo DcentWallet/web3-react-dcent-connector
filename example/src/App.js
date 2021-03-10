@@ -2,17 +2,21 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import { Web3ReactProvider, useWeb3React } from "@web3-react/core";
 import { NetworkConnector } from "@web3-react/network-connector";
+import { DcentConnector } from "dcent-connector"
 import { Web3Provider } from "@ethersproject/providers";
 
 import 'dotenv/config'
 
-console.log(process.env.REACT_APP_RPC_URL_1);
 const networkConnector = new NetworkConnector({
   urls: {
-    1: process.env.REACT_APP_RPC_URL_1
+    1: process.env.REACT_APP_RPC_URL_1,
   },
   defaultChainId: 1
 });
+const dcentConnector = new DcentConnector({
+  chainId: 1,
+  url: process.env.REACT_APP_RPC_URL_1,
+})
 
 export default function () {
   const getLibrary = (provider) => {
@@ -28,10 +32,10 @@ export default function () {
 }
 function App() {
   const [blockNumber, setBlockNumber] = useState(undefined);
-  const { connector, library, activate, deactivate, active } = useWeb3React();
+  const { connector, library, activate, deactivate, active, account } = useWeb3React();
 
   useEffect(() => {
-    console.log(library);
+    console.log('[UseEffect] library', library);
     if (library) {
       library.getBlockNumber().then((bn) => {
         setBlockNumber(bn);
@@ -43,9 +47,14 @@ function App() {
       };
     }
   }, [library]);
-  const onClickActivate = () => {
+  const onClickNetworkActivate = () => {
     activate(networkConnector);
   };
+  const onClickDcentActivate = () => {
+    activate(dcentConnector, (error) => {
+      console.error(error)
+    })
+  }
   const onClickDeactivate = () => {
     deactivate(connector);
   };
@@ -55,7 +64,11 @@ function App() {
       <b>Current Block Number: </b>
       {blockNumber}
       <br />
-      <button onClick={onClickActivate}>activate</button>
+      <b>Current Account: </b>
+      {account}
+      <br />
+      <button onClick={onClickNetworkActivate}>network activate</button>
+      <button onClick={onClickDcentActivate}>dcent activate</button>
       {active && <button onClick={onClickDeactivate}>deactivate</button>}
     </div>
   );

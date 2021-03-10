@@ -10,7 +10,6 @@ interface DcentConnectorArguments {
   url: string
   pollingInterval?: number
   requestTimeoutMs?: number
-  baseDerivationPath?: string
 }
 
 export class DcentConnector extends AbstractConnector {
@@ -18,8 +17,6 @@ export class DcentConnector extends AbstractConnector {
   private readonly url: string
   private readonly pollingInterval?: number
   private readonly requestTimeoutMs?: number
-  private readonly accountFetchingConfigs?: any
-  private readonly baseDerivationPath?: string
 
   private provider: any
 
@@ -28,7 +25,6 @@ export class DcentConnector extends AbstractConnector {
     url,
     pollingInterval,
     requestTimeoutMs,
-    baseDerivationPath
   }: DcentConnectorArguments) {
     super({ supportedChainIds: [chainId] })
 
@@ -41,11 +37,7 @@ export class DcentConnector extends AbstractConnector {
   public async activate(): Promise<ConnectorUpdate> {
     if (!this.provider) {
       const engine = new Web3ProviderEngine({ pollingInterval: this.pollingInterval })
-      engine.addProvider(
-        new DcentSubProvider({
-          networkId: this.chainId,
-        })
-      )
+      engine.addProvider(new DcentSubProvider({ networkId: this.chainId }))
       engine.addProvider(new CacheSubprovider())
       engine.addProvider(new RPCSubprovider(this.url, this.requestTimeoutMs))
       this.provider = engine
@@ -65,7 +57,7 @@ export class DcentConnector extends AbstractConnector {
   }
 
   public async getAccount(): Promise<null> {
-    return this.provider._providers[0].getAccountsAsync(1).then((accounts: string[]): string => accounts[0])
+    return this.provider._providers[0].getAccounts().then((accounts: string[]): string => accounts[0])
   }
 
   public deactivate() {

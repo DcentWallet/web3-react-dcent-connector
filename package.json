@@ -40,5 +40,6 @@
     "@web3-react/types": "^6.0.7",
     "dcent-web-connector": "^0.10.1",
     "tsdx": "^0.11.0"
-  }
+  },
+  "license": "GPL-3.0-or-later"
 }
