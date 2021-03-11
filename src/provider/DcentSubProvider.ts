@@ -203,7 +203,7 @@ const signPersonalMessageAsync = async msgData => {
   }
 
   LOG('dcent signPersonalMessageAsync result: ', txResult);
-  return '0x' + txResult.body.parameter.sign;
+  return txResult.body.parameter.sign;
 };
 
 export default class DcentHookedWalletSubprovider extends HookedWallet {
