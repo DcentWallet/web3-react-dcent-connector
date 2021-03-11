@@ -10,3 +10,5 @@ dist
 .env
 out
 .vscode
+
+example/build
