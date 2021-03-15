@@ -1,1 +1,1 @@
-export { default } from './DcentSubProvider'
+export { default } from "./DcentSubProvider";

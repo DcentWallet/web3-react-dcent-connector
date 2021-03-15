@@ -1,6 +1,6 @@
-import HookedWallet from 'web3-provider-engine/subproviders/hooked-wallet';
-import DcentConnector from 'dcent-web-connector';
-import LOG from '../utils/log';
+import HookedWallet from "web3-provider-engine/subproviders/hooked-wallet";
+import DcentConnector from "dcent-web-connector";
+import LOG from "../utils/log";
 
 const pathMap = {};
 let networkId;
@@ -17,7 +17,7 @@ const getPath = async address => {
 
 const openPopup = async () => {
   const popupResult = await DcentConnector.dcentPopupWindow();
-  if (popupResult != null && popupResult.header.status === 'error') {
+  if (popupResult != null && popupResult.header.status === "error") {
     throw new Error(popupResult.body.error.message);
   }
   return popupResult;
@@ -26,7 +26,7 @@ const openPopup = async () => {
 // D'CENT Bridge Service window appears and wait for the device to connect.
 const waitConnectWallet = async () => {
   if (!DcentConnector.popupWindow || DcentConnector.popupWindow.closed) {
-    throw new Error('popup_closed');
+    throw new Error("popup_closed");
   }
   const infoResult = await DcentConnector.info();
   if (!infoResult.body.parameter.isUsbAttached) {
@@ -55,9 +55,9 @@ const getAccountsAsync = async () => {
 
   // Get all accounts list
   const accountResult = await DcentConnector.getAccountInfo();
-  LOG('dcent accountInfo result: ', accountResult);
+  LOG("dcent accountInfo result: ", accountResult);
   const accounts = accountResult.body.parameter.account;
-  LOG('dcent accounts: ', accounts);
+  LOG("dcent accounts: ", accounts);
 
   // Get only ethereum accounts
   const etherAccounts = accounts.filter(
@@ -67,7 +67,7 @@ const getAccountsAsync = async () => {
   etherAccounts.forEach(accountInfo => {
     paths.push(accountInfo.address_path);
   });
-  LOG('dcent ethereum path: ', paths);
+  LOG("dcent ethereum path: ", paths);
   // There is no account
   if (paths.length === 0) {
     paths.push("m/44'/60'/0'/0/0");
@@ -86,7 +86,7 @@ const getAccountsAsync = async () => {
     pathMap[addressResult.body.parameter.address] = path;
     addresses.push(addressResult.body.parameter.address);
   }
-  LOG('dcent addresses: ', addresses);
+  LOG("dcent addresses: ", addresses);
 
   DcentConnector.popupWindowClose();
 
@@ -94,7 +94,7 @@ const getAccountsAsync = async () => {
 };
 
 const signTransaction = (txData, callback) => {
-  if (typeof callback === 'undefined') {
+  if (typeof callback === "undefined") {
     return signTransactionAsync(txData);
   } else {
     signTransactionAsync(txData)
@@ -122,12 +122,12 @@ const signTransactionAsync = async txData => {
   await openPopup();
   await waitConnectWallet();
 
-  LOG('dcent signTransactionAsync txData: ', txData);
-  LOG('dcent signTransactionAsync pathMap: ', pathMap);
+  LOG("dcent signTransactionAsync txData: ", txData);
+  LOG("dcent signTransactionAsync pathMap: ", pathMap);
   const path = await getPath(txData.from);
   if (!path) throw new Error(`address unknown '${txData.from}'`);
-  LOG('dcent signTransactionAsync path: ', path);
-  LOG('dcent signTransactionAsync networkId: ', networkId);
+  LOG("dcent signTransactionAsync path: ", path);
+  LOG("dcent signTransactionAsync networkId: ", networkId);
   let txResult;
   try {
     txResult = await DcentConnector.getEthereumSignedTransaction(
@@ -136,14 +136,14 @@ const signTransactionAsync = async txData => {
       txData.gasPrice,
       txData.gas,
       txData.to,
-      txData.value || '0',
-      txData.data || '0x',
+      txData.value || "0",
+      txData.data || "0x",
       path,
       networkId
     );
   } catch (err) {
-    if (err.header.response_from === 'wam') {
-      throw new Error('no_device');
+    if (err.header.response_from === "wam") {
+      throw new Error("no_device");
     }
     if (err.body.error.code) {
       throw new Error(err.body.error.code);
@@ -154,12 +154,12 @@ const signTransactionAsync = async txData => {
     DcentConnector.popupWindowClose();
   }
 
-  LOG('dcent signTransaction tx: ', txResult);
-  return '0x' + txResult.body.parameter.signed;
+  LOG("dcent signTransaction tx: ", txResult);
+  return "0x" + txResult.body.parameter.signed;
 };
 
 const signPersonalMessage = (msgData, callback) => {
-  if (typeof callback === 'undefined') {
+  if (typeof callback === "undefined") {
     return signPersonalMessageAsync(msgData);
   } else {
     signPersonalMessageAsync(msgData)
@@ -181,7 +181,7 @@ const signPersonalMessageAsync = async msgData => {
   await openPopup();
   await waitConnectWallet();
 
-  LOG('dcent signPersonalMessageAsync msgData= ', msgData);
+  LOG("dcent signPersonalMessageAsync msgData= ", msgData);
   const path = await getPath(msgData.from);
   if (!path) throw new Error(`address unknown '${msgData.from}'`);
   let txResult;
@@ -191,8 +191,8 @@ const signPersonalMessageAsync = async msgData => {
       path
     );
   } catch (err) {
-    if (err.header.response_from === 'wam') {
-      throw new Error('no_device');
+    if (err.header.response_from === "wam") {
+      throw new Error("no_device");
     }
     if (err.body.error.code) {
       throw new Error(err.body.error.code);
@@ -202,7 +202,7 @@ const signPersonalMessageAsync = async msgData => {
     DcentConnector.popupWindowClose();
   }
 
-  LOG('dcent signPersonalMessageAsync result: ', txResult);
+  LOG("dcent signPersonalMessageAsync result: ", txResult);
   return txResult.body.parameter.sign;
 };
 
@@ -210,10 +210,11 @@ export default class DcentHookedWalletSubprovider extends HookedWallet {
   constructor(opts: any = {}) {
     const extOpts = {
       signTransaction,
-      signPersonalMessage
+      signPersonalMessage,
+      signMessage: signPersonalMessage
     };
     const options = Object.assign(opts, extOpts);
-    LOG('dcent DcentHookedWalletSubprovider constructor options: ', options);
+    LOG("dcent DcentHookedWalletSubprovider constructor options: ", options);
 
     networkId = opts.networkId;
     super(options);

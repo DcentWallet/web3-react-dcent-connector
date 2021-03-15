@@ -1,6 +1,6 @@
 let LOG: Function;
-if (process.env.NODE_ENV !== 'production') {
-  LOG = console.log.bind(console, '[LOG]');
+if (process.env.NODE_ENV !== "production") {
+  LOG = console.log.bind(console, "[LOG]");
 } else {
   LOG = () => {};
 }
